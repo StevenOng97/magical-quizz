@@ -1,10 +1,7 @@
 import {
-  Cloud,
   CreditCard,
   Github,
-  Keyboard,
   LifeBuoy,
-  LogOut,
   Mail,
   MessageSquare,
   Plus,
@@ -12,25 +9,20 @@ import {
   Settings,
   User,
   UserPlus,
-  Users,
   BarChartBig,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 
 export function NavMenu() {
@@ -40,7 +32,10 @@ export function NavMenu() {
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuItem>
-          <Link href="/dashboard" className="flex flexr-row">
+          <Link
+            href="/dashboard"
+            className="flex flexr-row"
+          >
             <BarChartBig className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </Link>
@@ -50,13 +45,19 @@ export function NavMenu() {
           <span>Profile</span>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/quizz/new" className="flex flexr-row">
+          <Link
+            href="/quizz/new"
+            className="flex flexr-row"
+          >
             <Plus className="mr-2 h-4 w-4" />
             <span>New Quizz</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/billing" className="flex flexr-row">
+          <Link
+            href="/billing"
+            className="flex flexr-row"
+          >
             <CreditCard className="mr-2 h-4 w-4" />
             <span>Billing</span>
           </Link>
@@ -102,5 +103,5 @@ export function NavMenu() {
         <span>Support</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
-  )
+  );
 }

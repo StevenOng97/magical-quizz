@@ -8,10 +8,16 @@ const page = () => {
       <AlertDescription>
         Your account has been updated.
         <br />
-        <Link href="/dashboard" className="underline">Go to the dashboard</Link> to generate more quizzes.
+        <Link
+          href="/dashboard"
+          className="underline"
+        >
+          Go to the dashboard
+        </Link>{" "}
+        to generate more quizzes.
       </AlertDescription>
     </Alert>
-  )
+  );
 };
 
 export default page;

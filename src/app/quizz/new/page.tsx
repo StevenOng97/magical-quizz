@@ -1,5 +1,5 @@
 import UploadDoc from "../UploadDoc";
-import { auth, signIn } from "@/auth";
+import { auth } from "@/auth";
 import { getUserSubscription } from "@/actions/userSubscriptions";
 import { Lock, Flame } from "lucide-react";
 import { getStripe } from "@/lib/stripe-client";

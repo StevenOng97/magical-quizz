@@ -20,7 +20,7 @@ export default function Home() {
             <h3 className="text-sm">
               Upload documents, and easily generate your quizzes with AI.
             </h3>
-            <Button className="mt-4 h-14 w-content">
+            <Button className="mt-4 h-14 w-content" asChild>
               <Link href="quizz/new">Get Started</Link>
             </Button>
           </div>

@@ -1,16 +1,20 @@
-import React from 'react'
+import React from "react";
 
 type Props = {
-  value: number
-}
+  value: number;
+};
 
 const ProgressBar = (props: Props) => {
   return (
     <div className="w-full bg-secondary rounded-full h-2.5">
-      <div className="bg-primary h-2.5 rounded-md" style={{
-        width: `${props.value}%`
-      }}></div></div>
-  )
-}
+      <div
+        className="bg-primary h-2.5 rounded-md"
+        style={{
+          width: `${props.value}%`,
+        }}
+      ></div>
+    </div>
+  );
+};
 
-export default ProgressBar
+export default ProgressBar;
