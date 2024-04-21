@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
+import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -27,22 +28,24 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <SessionProvider>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <ThemeProvider
-            attribute="class"
-            enableSystem
-            forcedTheme="dark"
-            disableTransitionOnChange
+        <ReactQueryProvider>
+          <body
+            className={cn(
+              "min-h-screen bg-background font-sans antialiased",
+              fontSans.variable
+            )}
           >
-            <Header />
-            {children}
-          </ThemeProvider>
-        </body>
+            <ThemeProvider
+              attribute="class"
+              enableSystem
+              forcedTheme="dark"
+              disableTransitionOnChange
+            >
+              <Header />
+              {children}
+            </ThemeProvider>
+          </body>
+        </ReactQueryProvider>
       </SessionProvider>
     </html>
   );
