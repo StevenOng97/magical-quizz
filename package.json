@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.4.0",
-    "@clerk/nextjs": "^4.29.9",
     "@hookform/resolvers": "^3.3.4",
     "@langchain/groq": "^0.0.8",
     "@langchain/openai": "^0.0.14",
