@@ -24,7 +24,6 @@ export const {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log("url:", url, baseUrl);
       return baseUrl;
     },
   },
