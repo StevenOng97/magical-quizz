@@ -1,9 +1,11 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export const formatDate = (timestamp?: string) => {
+  if (!timestamp) return "N/A";
+  const dateObject = new Date(Number(timestamp) * 1000);
+  const day = String(dateObject.getUTCDate()).padStart(2, "0");
+  const month = String(dateObject.getUTCMonth() + 1).padStart(2, "0");
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 export function roundIfNumber(value: string | number | null) {
   if (typeof value === "number") {
