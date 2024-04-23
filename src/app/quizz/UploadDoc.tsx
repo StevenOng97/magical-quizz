@@ -2,9 +2,22 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const DEFAULT_NUMBER_OF_QUIZ = 5;
 
 const UploadDoc = () => {
   const [document, setDocument] = useState<File | null | undefined>(null);
+  const [numberOfQuiz, setNumberOfQuiz] = useState<number>(
+    DEFAULT_NUMBER_OF_QUIZ
+  );
+  const [answerPerQuizz, setAnswerPerQuizz] = useState<number>(
+    DEFAULT_NUMBER_OF_QUIZ
+  );
+  const [customPrompt, setCustomPrompt] = useState<string>("");
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const router = useRouter();
@@ -54,7 +67,7 @@ const UploadDoc = () => {
         >
           <label
             htmlFor="document"
-            className="bg-secondary w-full flex h-20 rounded-md border-4 border-dashed border-blue-900 relative"
+            className="bg-secondary w-full flex h-20 rounded-md border-4 border-dashed border-blue-900 relative max-w-96 m-auto"
           >
             <div className="absolute inset-0 m-auto flex justify-center items-center">
               {document && document?.name ? document.name : "Drag a file"}
@@ -62,7 +75,7 @@ const UploadDoc = () => {
             <input
               type="file"
               id="document"
-              className="relative block w-full h-full z-50 opacity-0"
+              className="relative block w-full h-full z-50 opacity-0 "
               onChange={handleDocumentUpload}
             />
           </label>
@@ -70,13 +83,80 @@ const UploadDoc = () => {
             Supported file types: pdf
           </p>
           {error ? <p className="text-red-600">{error}</p> : null}
-          <Button
-            size="lg"
-            className="mt-2"
-            type="submit"
-          >
-            Generate Quizz 🪄
-          </Button>
+          {document && (
+            <div className="border border-white rounded-lg w-full p-10">
+              <div className="flex flex-col md:flex-row gap-10 mb-5">
+                <div className="text-left">
+                  <Label>Number of Quizz</Label>
+                  <Input
+                    value={numberOfQuiz}
+                    type="number"
+                    onChange={(e) => {
+                      const newValue = Number(e.target.value);
+                      setNumberOfQuiz(newValue > 0 ? newValue : 1);
+                    }}
+                  />
+                </div>
+
+                <div className="text-left">
+                  <Label>Number of Answers per Quizz</Label>
+                  <Input
+                    value={answerPerQuizz}
+                    type="number"
+                    onChange={(e) => {
+                      const newValue = Number(e.target.value);
+                      setAnswerPerQuizz(newValue > 0 ? newValue : 1);
+                    }}
+                  />
+                </div>
+
+                <div className="text-left grow">
+                  <Label>Custom Prompt</Label>
+                  <Input
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="text-left">
+                <Label>Export Type</Label>
+                <RadioGroup
+                  defaultValue="quizzUrl"
+                  className="flex gap-10"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="quizzUrl"
+                      id="quizzUrl"
+                    />
+                    <Label htmlFor="quizzUrl">Quizz URL</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="googleForm"
+                      id="googleForm"
+                    />
+                    <Label htmlFor="googleForm">Google Form</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="pdfFile"
+                      id="pdfFile"
+                    />
+                    <Label htmlFor="pdfFile">PDF File</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <Button
+                size="lg"
+                className="mt-5"
+                type="submit"
+              >
+                Generate Quizz 🪄
+              </Button>
+            </div>
+          )}
         </form>
       )}
     </div>
