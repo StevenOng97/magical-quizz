@@ -23,7 +23,7 @@ const page = async () => {
   });
   const userData = await getUserMetrics();
   const heatMapData = await getHeatMapData();
-
+  
   return (
     <div className="mt-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

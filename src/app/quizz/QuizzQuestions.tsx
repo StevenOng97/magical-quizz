@@ -20,6 +20,7 @@ type Quizz = InferSelectModel<typeof quizzes> & { questions: Question[] };
 
 type Props = {
   quizz: Quizz;
+  accessToken: string;
 };
 
 export default function QuizzQuestions(props: Props) {
@@ -70,6 +71,19 @@ export default function QuizzQuestions(props: Props) {
     }
 
     setSubmitted(true);
+  };
+
+  const handleSaveToGoogleForm = async () => {
+    try {
+      const res = await fetch("/api/quizz/create_google_survey_form", {
+        method: "POST",
+      });
+      if (res.status === 200) {
+        console.log("res:", res);
+      }
+    } catch (e) {
+      console.log("error while save to gform", e);
+    }
   };
 
   const handlePressPrev = () => {
@@ -179,6 +193,7 @@ export default function QuizzQuestions(props: Props) {
             <Button
               size="lg"
               onClick={handleSubmit}
+              className="flex-1"
             >
               Submit
             </Button>
@@ -186,10 +201,19 @@ export default function QuizzQuestions(props: Props) {
             <Button
               size="lg"
               onClick={handleNext}
+              className="flex-1"
             >
               {!started ? "Start" : "Next"}
             </Button>
           )}
+
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={handleSaveToGoogleForm}
+          >
+            Create Google Survey
+          </Button>
         </div>
       </footer>
     </div>
