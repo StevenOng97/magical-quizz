@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import getRedisInstance from "@/lib/upstash/redis";
 import getQStashClient from "@/lib/upstash/qstash";
 import getSupabaseClient from "@/lib/supabase/client";
+import { auth } from "@/auth";
 
 // const embeddings = new HuggingFaceInferenceEmbeddings({
 //   apiKey: process.env.HF_API_KEY,
@@ -23,6 +24,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error }, { status: 500 });
   }
 
+  const session = await auth();
+  const userId = session?.user?.id;
+
   try {
     const redisClient = getRedisInstance();
     redisClient.hset(`quizz-${id}`, {
@@ -38,6 +42,7 @@ export async function POST(req: NextRequest) {
         data: {
           id,
           fileName,
+          userId
         },
       },
     });
@@ -46,29 +51,4 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
-
-  // Enhance later with Vector and LLM Answer in Conservation
-  // const vector = await embeddings.embedQuery(joinnedText);
-  // const id = uuidv4();
-
-  // const record = {
-  //   id,
-  //   vector,
-  //   metadata: {
-  //     id,
-  //     type: "pdf-vector",
-  //   },
-  // };
-
-  // try {
-  //   // await vectorIndexClient.upsert(record);
-  //   const redisClient = getRedisInstance();
-
-  // await redisClient.hset(`quizz-${id}`, {
-  //   id,
-  //   data: joinnedText,
-  // });
-  // } catch (error) {
-  //   console.error(error);
-  // }
 }
