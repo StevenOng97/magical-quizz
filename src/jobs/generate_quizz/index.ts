@@ -9,6 +9,11 @@ import saveQuizz, { SaveQuizzData } from "@/app/api/quizz/generate/saveToDb";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import getRedisInstance from "@/lib/upstash/redis";
 
+// const embeddings = new HuggingFaceInferenceEmbeddings({
+//   apiKey: process.env.HF_API_KEY,
+//   model: "sentence-transformers/all-MiniLM-L6-v2",
+// });
+
 const quizzSchema = z
   .object({
     name: z.string().min(0).describe("The name of the quizz"),
