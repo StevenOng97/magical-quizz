@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const supabaseClient = getSupabaseClient();
     const { data, error } = await supabaseClient.storage
       .from("pdfs")
-      .download(fileName);
+      .download("dummy.pdf");
 
     if (error) {
       return NextResponse.json(
