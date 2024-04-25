@@ -74,16 +74,16 @@ export default function QuizzQuestions(props: Props) {
   };
 
   const handleSaveToGoogleForm = async () => {
-    try {
-      const res = await fetch("/api/quizz/create_google_survey_form", {
-        method: "POST",
-      });
-      if (res.status === 200) {
-        console.log("res:", res);
-      }
-    } catch (e) {
-      console.log("error while save to gform", e);
-    }
+    // try {
+    //   const res = await fetch("/api/quizz/create_google_survey_form", {
+    //     method: "POST",
+    //   });
+    //   if (res.status === 200) {
+    //     console.log("res:", res);
+    //   }
+    // } catch (e) {
+    //   console.log("error while save to gform", e);
+    // }
   };
 
   const handlePressPrev = () => {

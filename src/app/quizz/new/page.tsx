@@ -1,12 +1,8 @@
 import UploadDoc from "../UploadDoc";
 import { auth } from "@/auth";
 import { getUserSubscription } from "@/actions/userSubscriptions";
-import { Lock, Flame } from "lucide-react";
-import { getStripe } from "@/lib/stripe-client";
-import { useRouter } from "next/navigation";
-import { PRICE_ID } from "@/lib/utils";
 import UpgradePlan from "../UpgradePlan";
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
 const page = async () => {
   const session = await auth();
@@ -16,7 +12,9 @@ const page = async () => {
     redirect("/sign-in");
   }
 
-  const subscribed: boolean | null | undefined = await getUserSubscription({ userId })
+  const subscribed: boolean | null | undefined = await getUserSubscription({
+    userId,
+  });
 
   return (
     <div className="flex flex-col flex-1">
@@ -34,6 +32,6 @@ const page = async () => {
       </main>
     </div>
   );
-}
+};
 
 export default page;

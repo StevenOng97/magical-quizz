@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,54 @@ const UploadDoc = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const router = useRouter();
+  const [messageId, setMessageId] = useState<string>();
+  const [redisObjectID, setRedisObjectID] = useState<string>();
+
+  useEffect(() => {
+    if (messageId && !redisObjectID) {
+      const fetchResult = async () => {
+        try {
+          const response = await fetch(
+            `/api/redis_db?messageId=${messageId}&objectName=quizz`,
+            { method: "GET" }
+          );
+
+          const data = await response.json();
+          const objectId = data.objectId;
+          setRedisObjectID(objectId);
+        } catch (err) {
+          console.log("error while generating", err);
+        }
+      };
+
+      const intervalId = setInterval(fetchResult, 1500); // Check every 3 seconds
+
+      return () => clearInterval(intervalId); // Cleanup
+    }
+  }, [messageId, redisObjectID]);
+
+  useEffect(() => {
+    if (!redisObjectID) return;
+
+    const fetchResult = async () => {
+      try {
+        const response = await fetch(`/api/tasks?taskId=${redisObjectID}`, {
+          method: "GET",
+        });
+        const data = await response.json();
+        const quizzId = data.quizzId;
+        if (quizzId) {
+          router.push(`/quizz/${quizzId}`);
+        }
+      } catch (err) {
+        console.log("error while generating", err);
+      }
+    };
+
+    const intervalId = setInterval(fetchResult, 3000); // Check every 3 seconds
+
+    return () => clearInterval(intervalId); // Cleanup
+  }, [redisObjectID]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,16 +80,15 @@ const UploadDoc = () => {
     setIsLoading(true);
     const formData = new FormData();
     formData.append("pdf", document as Blob);
+
     try {
-      const res = await fetch("/api/quizz/generate", {
+      const res = await fetch("/api/background_jobs/start_generate_quizz", {
         method: "POST",
         body: formData,
       });
       if (res.status === 200) {
-        const data = await res.json();
-        const quizzId = data.quizzId;
-
-        router.push(`/quizz/${quizzId}`);
+        const { messageId } = await res.json();
+        setMessageId(messageId);
       }
     } catch (e) {
       console.log("error while generating", e);
