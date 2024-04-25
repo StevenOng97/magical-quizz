@@ -42,19 +42,20 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
   const userId = session?.user?.id;
-
-  const response = await fetch(fileUrl);
-  const pdfBlob = await response.blob();
-  const loader = new WebPDFLoader(pdfBlob);
-  const docs = await loader.load();
-
-  const selectedDocuments = docs.filter((doc) => doc.pageContent !== undefined);
-  const texts = selectedDocuments.map((doc) => doc.pageContent);
-  const joinnedText = texts.join("\n");
-
   const redisClient = getRedisInstance();
 
   try {
+    const response = await fetch(fileUrl);
+    const pdfBlob = await response.blob();
+    const loader = new WebPDFLoader(pdfBlob);
+    const docs = await loader.load();
+
+    const selectedDocuments = docs.filter(
+      (doc) => doc.pageContent !== undefined
+    );
+    const texts = selectedDocuments.map((doc) => doc.pageContent);
+    const joinnedText = texts.join("\n");
+
     const prompt =
       "given the text which is a summary of the document, generate a quiz based on the text. The quizz should includes atleast 5 questions, each questions includes atleast 4 answers. Return json only that contains a quizz object with fields: name, description and questions. The questions is an array of objects with fields: questionText, answers. The answers is an array of objects with fields: answerText, isCorrect.";
 
@@ -83,8 +84,8 @@ export async function POST(req: NextRequest) {
     redisClient.hsetnx(`quizz-${id}`, "quizzId", quizzId);
 
     return NextResponse.json({ quizzId }, { status: 200 });
-  } catch (e: any) {
+  } catch (err: any) {
     await redisClient.hsetnx(`quizz-${data}`, "isSuccess", false);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
