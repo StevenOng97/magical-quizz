@@ -21,38 +21,14 @@ const UploadDoc = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const [messageId, setMessageId] = useState<string>();
-  const [redisObjectID, setRedisObjectID] = useState<string>();
+  const [redisKey, seyRedisKey] = useState<string>();
 
   useEffect(() => {
-    if (messageId && !redisObjectID) {
-      const fetchResult = async () => {
-        try {
-          const response = await fetch(
-            `/api/redis_db?messageId=${messageId}&objectName=quizz`,
-            { method: "GET" }
-          );
-
-          const data = await response.json();
-          const objectId = data.objectId;
-          setRedisObjectID(objectId);
-        } catch (err) {
-          console.log("error while generating", err);
-        }
-      };
-
-      const intervalId = setInterval(fetchResult, 1500); // Check every 3 seconds
-
-      return () => clearInterval(intervalId); // Cleanup
-    }
-  }, [messageId, redisObjectID]);
-
-  useEffect(() => {
-    if (!redisObjectID) return;
+    if (!redisKey) return;
 
     const fetchResult = async () => {
       try {
-        const response = await fetch(`/api/tasks?taskId=${redisObjectID}`, {
+        const response = await fetch(`/api/tasks?taskId=${redisKey}`, {
           method: "GET",
         });
         const data = await response.json();
@@ -68,7 +44,7 @@ const UploadDoc = () => {
     const intervalId = setInterval(fetchResult, 3000); // Check every 3 seconds
 
     return () => clearInterval(intervalId); // Cleanup
-  }, [redisObjectID]);
+  }, [redisKey]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,13 +58,13 @@ const UploadDoc = () => {
     formData.append("pdf", document as Blob);
 
     try {
-      const res = await fetch("/api/background_jobs/start_generate_quizz", {
+      const res = await fetch("/api/quizz/generate", {
         method: "POST",
         body: formData,
       });
       if (res.status === 200) {
-        const { messageId } = await res.json();
-        setMessageId(messageId);
+        const { keyId } = await res.json();
+        seyRedisKey(keyId);
       }
     } catch (e) {
       console.log("error while generating", e);

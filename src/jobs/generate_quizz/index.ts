@@ -47,10 +47,9 @@ client.defineJob({
   }),
   run: async (payload, io, ctx) => {
     const { fileId, fileName, userId } = payload;
-    
-    await io.runTask("generate-quizz", async () => {
+
+    const joinnedText = await io.runTask("parse-pdf-to-text", async () => {
       const supabaseClient = getSupabaseClient();
-      const redisClient = getRedisInstance();
       const { data, error } = await supabaseClient.storage
         .from("pdfs")
         .download(fileName);
@@ -64,6 +63,10 @@ client.defineJob({
       const texts = selectedDocuments.map((doc) => doc.pageContent);
       const joinnedText = texts.join("\n");
 
+      return joinnedText;
+    });
+
+    const promptToAI = await io.runTask("prompt-ai", async () => {
       const prompt =
         "given the text which is a summary of the document, generate a quiz based on the text. The quizz should includes atleast 5 questions, each questions includes atleast 4 answers. Return json only that contains a quizz object with fields: name, description and questions. The questions is an array of objects with fields: questionText, answers. The answers is an array of objects with fields: answerText, isCorrect.";
 
@@ -87,7 +90,12 @@ client.defineJob({
 
       const result: SaveQuizzData = await chain.invoke({});
       result.userId = userId;
-      const { quizzId } = await saveQuizz(result);
+      return result;
+    });
+
+    await io.runTask("save-to-db", async () => {
+      const redisClient = getRedisInstance();
+      const { quizzId } = await saveQuizz(promptToAI);
       redisClient.hsetnx(`quizz-${fileId}`, "data", joinnedText);
       redisClient.hsetnx(`quizz-${fileId}`, "quizzId", quizzId);
     });
