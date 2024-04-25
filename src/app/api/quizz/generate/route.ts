@@ -8,6 +8,8 @@ import { auth } from "@/auth";
 // import vectorIndexClient from "@/lib/upstash/vector-index";
 import getRedisInstance from "@/lib/upstash/redis";
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
+import httpsProxyAgent from "https-proxy-agent";
+import getSupabaseClient from "@/lib/supabase/client";
 
 const quizzSchema = z
   .object({
@@ -38,16 +40,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Data not found" }, { status: 500 });
   }
 
-  const { id, fileUrl } = data;
+  const { id, fileName } = data;
 
   const session = await auth();
   const userId = session?.user?.id;
   const redisClient = getRedisInstance();
 
   try {
-    const response = await fetch(fileUrl);
-    const pdfBlob = await response.blob();
-    const loader = new WebPDFLoader(pdfBlob);
+    const supabaseClient = getSupabaseClient();
+    const { data, error } = await supabaseClient.storage
+      .from("pdfs")
+      .download(fileName);
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Unable to download PDF" },
+        { status: 500 }
+      );
+    }
+
+    const loader = new WebPDFLoader(data as Blob);
     const docs = await loader.load();
 
     const selectedDocuments = docs.filter(

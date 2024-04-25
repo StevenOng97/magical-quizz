@@ -14,17 +14,14 @@ export async function POST(req: NextRequest) {
   const document = body.get("pdf") as File;
   const supabaseClient = getSupabaseClient();
   const id = uuidv4();
+  const fileName = `${document.name}-${id}`;
   const { data, error } = await supabaseClient.storage
     .from("pdfs")
-    .upload(`${document.name}-${id}`, document);
+    .upload(fileName, document);
 
   if (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
-
-  const { data: uploadedPdf } = supabaseClient.storage
-    .from("pdfs")
-    .getPublicUrl(`${document.name}-${id}`);
 
   try {
     const redisClient = getRedisInstance();
@@ -40,7 +37,7 @@ export async function POST(req: NextRequest) {
       body: {
         data: {
           id,
-          fileUrl: uploadedPdf.publicUrl,
+          fileName,
         },
       },
     });
