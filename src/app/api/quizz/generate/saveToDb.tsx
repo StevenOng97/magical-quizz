@@ -1,5 +1,10 @@
 import { db } from "@/db";
-import { quizzes, questions as dbQuestions, questionAnswers } from "@/db/schema";
+import {
+  quizzes,
+  questions as dbQuestions,
+  questionAnswers,
+  attachments,
+} from "@/db/schema";
 import { InferInsertModel } from "drizzle-orm";
 
 type Quizz = InferInsertModel<typeof quizzes>;
@@ -10,7 +15,10 @@ export interface SaveQuizzData extends Quizz {
   questions: Array<Question & { answers?: Answer[] }>;
 }
 
-export default async function saveQuizz(quizzData: SaveQuizzData) {
+export default async function saveQuizz(
+  quizzData: SaveQuizzData,
+  filePath: string
+) {
   const { name, description, questions, userId } = quizzData;
 
   const newQuizz = await db
@@ -18,7 +26,7 @@ export default async function saveQuizz(quizzData: SaveQuizzData) {
     .values({
       name,
       description,
-      userId
+      userId,
     })
     .returning({ insertedId: quizzes.id });
   const quizzId = newQuizz[0].insertedId;
@@ -29,7 +37,7 @@ export default async function saveQuizz(quizzData: SaveQuizzData) {
         .insert(dbQuestions)
         .values({
           questionText: question.questionText,
-          quizzId
+          quizzId,
         })
         .returning({ questionId: dbQuestions.id });
 
@@ -38,12 +46,18 @@ export default async function saveQuizz(quizzData: SaveQuizzData) {
           question.answers.map((answer) => ({
             answerText: answer.answerText,
             isCorrect: answer.isCorrect,
-            questionId
+            questionId,
           }))
-        )
+        );
       }
     }
-  })
+
+    await tx.insert(attachments).values({
+      resourceId: quizzId,
+      resourceType: "quizz",
+      filePath,
+    });
+  });
 
   return { quizzId };
 }

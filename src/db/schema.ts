@@ -6,6 +6,10 @@ import {
   integer,
   serial,
   boolean,
+  uuid,
+  varchar,
+  jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
@@ -74,6 +78,24 @@ export const quizzes = pgTable("quizzes", {
   description: text("description"),
   userId: text("user_id").references(() => users.id),
 });
+
+export const attachments = pgTable(
+  "attachments",
+  {
+    id: serial("id").primaryKey(),
+    resourceType: varchar("resource_type").notNull(),
+    resourceId: integer("resource_id").notNull(),
+    filePath: varchar("file_path").notNull(),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at").default(new Date()),
+  },
+  (attachment) => ({
+    index: index("resource_id_resource_type_idx").on(
+      attachment.resourceId,
+      attachment.resourceType
+    ),
+  })
+);
 
 export const quizzesRelations = relations(quizzes, ({ many, one }) => ({
   questions: many(questions),

@@ -8,6 +8,8 @@ import { ChatGroq } from "@langchain/groq";
 import saveQuizz, { SaveQuizzData } from "@/app/api/quizz/generate/saveToDb";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import getRedisInstance from "@/lib/upstash/redis";
+import { get } from "http";
+import { getPublicUrlByFileName } from "@/lib/utils/supabase";
 
 // const embeddings = new HuggingFaceInferenceEmbeddings({
 //   apiKey: process.env.HF_API_KEY,
@@ -37,11 +39,9 @@ const quizzSchema = z
   .describe("Information a quizz");
 
 client.defineJob({
-  // This is the unique identifier for your Job, it must be unique across all Jobs in your project.
   id: "generate-quizz",
   name: "Generate quizz from PDF",
   version: "0.0.1",
-  // This is triggered by an event using eventTrigger. You can also trigger Jobs with webhooks, on schedules, and more: https://trigger.dev/docs/documentation/concepts/triggers/introduction
   trigger: eventTrigger({
     name: "quizz.generate",
     schema: z.object({
@@ -71,7 +71,7 @@ client.defineJob({
       return joinnedText;
     });
 
-    const promptToAI = await io.runTask("prompt-ai", async () => {
+    const quizzData = await io.runTask("prompt-ai", async () => {
       const prompt =
         "given the text which is a summary of the document, generate a quiz based on the text. The quizz should includes atleast 5 questions, each questions includes atleast 4 answers. Return json only that contains a quizz object with fields: name, description and questions. The questions is an array of objects with fields: questionText, answers. The answers is an array of objects with fields: answerText, isCorrect.";
 
@@ -100,7 +100,8 @@ client.defineJob({
 
     await io.runTask("save-to-db", async () => {
       const redisClient = getRedisInstance();
-      const { quizzId } = await saveQuizz(promptToAI);
+      const filePath = getPublicUrlByFileName(fileName, "pdfs");
+      const { quizzId } = await saveQuizz(quizzData, filePath);
       redisClient.hsetnx(`quizz-${fileId}`, "data", joinnedText);
       redisClient.hsetnx(`quizz-${fileId}`, "quizzId", quizzId);
     });

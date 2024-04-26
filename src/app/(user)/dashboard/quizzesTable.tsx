@@ -1,12 +1,18 @@
-import { quizzes } from "@/db/schema";
+import { attachments, quizzes } from "@/db/schema";
 import { InferSelectModel } from "drizzle-orm";
 import Link from "next/link";
 
-export type Quizz = InferSelectModel<typeof quizzes>;
+type Attachment = InferSelectModel<typeof attachments>;
+type Quizz = InferSelectModel<typeof quizzes>;
+
+export type Data = {
+  quizzes: Quizz;
+  attachments: Attachment;
+};
 
 type Props = {
-  quizzes: Quizz[]
-}
+  quizzes: Data[];
+};
 
 const QuizzesTable = (props: Props) => {
   return (
@@ -16,21 +22,31 @@ const QuizzesTable = (props: Props) => {
           <tr>
             <th className="text-[#6c7381] text-left">Name</th>
             <th className="text-[#6c7381] text-left">Description</th>
+            <th className="text-[#6c7381] text-left">Attachment</th>
           </tr>
         </thead>
         <tbody>
-          {
-            props.quizzes.map((quizz: Quizz) =>
-              <tr key={quizz.id}>
-                <td><Link href={`/quizz/${quizz.id}`}>
-                  <p className="text-blue-600 underline">{quizz.name}</p></Link></td>
-                <td>{quizz.description}</td>
-              </tr>)
-          }
+          {props.quizzes.map((data: Data) => (
+            <tr key={data.quizzes.id}>
+              <td>
+                <Link href={`/quizz/${data.quizzes.id}`}>
+                  <p className="text-blue-600 underline">{data.quizzes.name}</p>
+                </Link>
+              </td>
+              <td>{data.quizzes.description}</td>
+              <td>
+                <Link href={`${data.attachments.filePath}`}>
+                  <p className="text-blue-600 underline">
+                    {data.attachments.filePath}
+                  </p>
+                </Link>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
-  )
+  );
 };
 
 export default QuizzesTable;

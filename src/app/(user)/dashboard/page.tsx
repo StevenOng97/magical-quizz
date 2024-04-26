@@ -1,8 +1,8 @@
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { quizzes } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
+import { attachments, quizzes } from "@/db/schema";
 import { auth } from "@/auth";
-import QuizzesTable, { Quizz } from "./quizzesTable";
+import QuizzesTable, { Data } from "./quizzesTable";
 import getUserMetrics from "@/actions/getUserMetrics";
 import getHeatMapData from "@/actions/getHeatMapData";
 import MetricCard from "./metricCard";
@@ -18,12 +18,21 @@ const page = async () => {
     return <p>User not found</p>;
   }
 
-  const userQuizzes: Quizz[] = await db.query.quizzes.findMany({
-    where: eq(quizzes.userId, userId),
-  });
+  const userQuizzes = (await db
+    .select()
+    .from(quizzes)
+    .leftJoin(
+      attachments,
+      and(
+        eq(attachments.resourceId, quizzes.id),
+        eq(attachments.resourceType, "quizz")
+      )
+    )
+    .where(eq(quizzes.userId, userId))) as Data[];
+
   const userData = await getUserMetrics();
   const heatMapData = await getHeatMapData();
-  
+
   return (
     <div className="mt-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
