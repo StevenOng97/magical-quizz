@@ -30,10 +30,15 @@ const Header = async () => {
   const session = await auth();
 
   return (
-    <header>
-      <nav className="px-4 py-2.5">
+    <header className="bg-primary text-primary-foreground">
+      <nav className="container  py-2.5">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-          <h1 className="text-3xl font-bold">Quizz AI</h1>
+          <Link
+            href="/"
+            className="text-3xl font-bold"
+          >
+            MagicQuizz
+          </Link>
           <div>
             {session?.user ? (
               <div className="flex items-center gap-4">
@@ -57,12 +62,7 @@ const Header = async () => {
               </div>
             ) : (
               <Link href="sign-in">
-                <Button
-                  variant="link"
-                  className="rounded-xl border"
-                >
-                  Sign In
-                </Button>
+                <Button variant="secondary">Sign In</Button>
               </Link>
             )}
           </div>

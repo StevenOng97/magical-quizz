@@ -31,14 +31,14 @@ export default function RootLayout({
         <ReactQueryProvider>
           <body
             className={cn(
-              "min-h-screen bg-background font-sans antialiased",
+              "min-h-screen bg-primary text-primary-foreground font-sans antialiased",
               fontSans.variable
             )}
           >
             <ThemeProvider
               attribute="class"
               enableSystem
-              forcedTheme="dark"
+              forcedTheme="light"
               disableTransitionOnChange
             >
               <Header />
