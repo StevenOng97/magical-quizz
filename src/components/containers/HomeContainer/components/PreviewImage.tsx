@@ -4,7 +4,7 @@ const PreviewImage = () => {
   return (
     <section className="w-full h-[600px] shadow-custom">
       <Image
-        src="/images/previewImage.png"
+        src="/images/app/previewImage.png"
         alt="Preview"
         width={1000}
         height={600}
