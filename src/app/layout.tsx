@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/ui/header";
 import { ThemeProvider } from "next-themes";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
+import LayoutHeader from "@/components/layout/LayoutHeader";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -41,7 +41,7 @@ export default function RootLayout({
               forcedTheme="light"
               disableTransitionOnChange
             >
-              <Header />
+              <LayoutHeader />
               {children}
             </ThemeProvider>
           </body>
