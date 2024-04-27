@@ -34,7 +34,7 @@ export const {
     },
   },
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account }: any) {
       if (account) {
         // Save the access token and refresh token in the JWT on the initial login
         return {
