@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import LayoutHeader from "@/components/layout/LayoutHeader";
+import { Providers } from "@/components/providers";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -41,8 +42,10 @@ export default function RootLayout({
               forcedTheme="light"
               disableTransitionOnChange
             >
-              <LayoutHeader />
-              {children}
+              <Providers>
+                <LayoutHeader />
+                {children}
+              </Providers>
             </ThemeProvider>
           </body>
         </ReactQueryProvider>

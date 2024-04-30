@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { client } from "@/trigger";
-import getSupabaseClient from "@/lib/supabase/client";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { auth } from "@/auth";
 import getRedisInstance from "@/lib/upstash/redis";
 import { v4 as uuidv4 } from "uuid";
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     userId,
     fileId: id,
     fileName,
+    originalFileName: document.name,
   };
 
   try {

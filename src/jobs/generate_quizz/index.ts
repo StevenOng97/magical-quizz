@@ -1,20 +1,18 @@
 import { eventTrigger } from "@trigger.dev/sdk";
 import { client } from "@/trigger";
 import { z } from "zod";
-import getSupabaseClient from "@/lib/supabase/client";
+import {
+  getSupabaseClient,
+  getSupabaseVectorStore,
+} from "@/lib/supabase/client";
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { ChatGroq } from "@langchain/groq";
 import saveQuizz, { SaveQuizzData } from "@/app/api/quizz/generate/saveToDb";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import getRedisInstance from "@/lib/upstash/redis";
-import { get } from "http";
 import { getPublicUrlByFileName } from "@/lib/utils/supabase";
-
-// const embeddings = new HuggingFaceInferenceEmbeddings({
-//   apiKey: process.env.HF_API_KEY,
-//   model: "sentence-transformers/all-MiniLM-L6-v2",
-// });
+import { Document } from "@langchain/core/documents";
 
 const quizzSchema = z
   .object({
@@ -48,10 +46,13 @@ client.defineJob({
       userId: z.string(),
       fileId: z.string(),
       fileName: z.string(),
+      originalFileName: z.string(),
     }),
   }),
   run: async (payload, io, ctx) => {
-    const { fileId, fileName, userId } = payload;
+    let documentsWithMetadata: Document<Record<string, any>>[] = [];
+
+    const { fileId, fileName, userId, originalFileName } = payload;
 
     const joinnedText = await io.runTask("parse-pdf-to-text", async () => {
       const supabaseClient = getSupabaseClient();
@@ -65,10 +66,25 @@ client.defineJob({
       const selectedDocuments = docs.filter(
         (doc) => doc.pageContent !== undefined
       );
+
+      documentsWithMetadata = selectedDocuments.map((document: Document) => {
+        return {
+          ...document,
+          metadata: {
+            id: fileId,
+          },
+        };
+      });
+
       const texts = selectedDocuments.map((doc) => doc.pageContent);
       const joinnedText = texts.join("\n");
 
       return joinnedText;
+    });
+
+    io.runTask("save-to-vector-store", async () => {
+      const vectorStore = getSupabaseVectorStore();
+      await vectorStore.addDocuments(documentsWithMetadata);
     });
 
     const quizzData = await io.runTask("prompt-ai", async () => {
@@ -101,7 +117,11 @@ client.defineJob({
     await io.runTask("save-to-db", async () => {
       const redisClient = getRedisInstance();
       const filePath = getPublicUrlByFileName(fileName, "pdfs");
-      const { quizzId } = await saveQuizz(quizzData, filePath);
+      const { quizzId } = await saveQuizz(
+        quizzData,
+        filePath,
+        originalFileName
+      );
       redisClient.hsetnx(`quizz-${fileId}`, "data", joinnedText);
       redisClient.hsetnx(`quizz-${fileId}`, "quizzId", quizzId);
     });

@@ -17,7 +17,8 @@ export interface SaveQuizzData extends Quizz {
 
 export default async function saveQuizz(
   quizzData: SaveQuizzData,
-  filePath: string
+  filePath: string,
+  originalFileName: string
 ) {
   const { name, description, questions, userId } = quizzData;
 
@@ -56,6 +57,9 @@ export default async function saveQuizz(
       resourceId: quizzId,
       resourceType: "quizz",
       filePath,
+      metadata: {
+        originalFileName: originalFileName,
+      },
     });
   });
 

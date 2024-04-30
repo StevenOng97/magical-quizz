@@ -1,4 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
+
+const embeddings = new HuggingFaceInferenceEmbeddings({
+  apiKey: process.env.HF_API_KEY,
+  model: "sangmini/msmarco-cotmae-MiniLM-L12_en-ko-ja",
+});
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,4 +27,13 @@ function getSupabaseClient() {
   return supabase;
 }
 
-export default getSupabaseClient;
+const store = new SupabaseVectorStore(embeddings, {
+  client: getSupabaseClient(),
+  tableName: "documents",
+});
+
+const getSupabaseVectorStore = () => {
+  return store;
+};
+
+export { getSupabaseClient, getSupabaseVectorStore };
