@@ -15,12 +15,13 @@ const page = async ({
 
   let id = uuidv4();
   let messages: Message[] = [];
+  let uiState;
   if (chat) {
     id = chat.id;
     messages = [...chat.messages];
   }
+  uiState = getUIStateFromAIState(chat!);
 
-  const uiState = getUIStateFromAIState(chat!);
   return (
     <AI
       initialAIState={{ quizzId, messages }}

@@ -5,10 +5,11 @@ import { ChatPanel } from "@/components/chat-panel";
 import { EmptyScreen } from "@/components/empty-screen";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { useEffect, useState } from "react";
-import { useAIState } from "ai/rsc";
+import { useAIState, useUIState } from "ai/rsc";
 import { useRouter } from "next/navigation";
 import { Message } from "@/lib/chat/actions";
 import { useScrollAnchor } from "@/lib/hooks/use-scroll-anchor";
+import { ChatList } from "./chat-list";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -19,6 +20,7 @@ export function Chat({ id, className }: ChatProps) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [aiState] = useAIState();
+  const [messages] = useUIState();
 
   const [_, setNewChatId] = useLocalStorage("quizzId", id);
 
@@ -45,7 +47,7 @@ export function Chat({ id, className }: ChatProps) {
         className={cn("pb-[200px] pt-4 md:pt-10", className)}
         ref={messagesRef}
       >
-        <EmptyScreen />
+        {messages.length ? <ChatList messages={messages} /> : <EmptyScreen />}
         <div
           className="h-px w-full"
           ref={visibilityRef}
