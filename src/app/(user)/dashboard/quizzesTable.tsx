@@ -35,9 +35,9 @@ const QuizzesTable = (props: Props) => {
               </td>
               <td>{data.quizzes.description}</td>
               <td>
-                <Link href={`${data.attachments.filePath}`}>
+                <Link href={`${data?.attachments?.filePath}`}>
                   <p className="text-blue-600 underline">
-                    {data.attachments.filePath}
+                    {(props.quizzes[0]?.attachments?.metadata as { originalFileName: string })?.originalFileName}
                   </p>
                 </Link>
               </td>
