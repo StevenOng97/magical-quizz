@@ -1,9 +1,8 @@
 import { db } from "@/db";
 
-import { accounts, quizzes } from "@/db/schema";
+import { quizzes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import QuizzQuestions from "../QuizzQuestions";
-import { auth } from "@/auth";
 
 const page = async ({
   params,
@@ -12,13 +11,6 @@ const page = async ({
     quizzId: string;
   };
 }) => {
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  const account = await db.query.accounts.findFirst({
-    where: eq(accounts.userId, userId!),
-  });
-
   const quizzId = params.quizzId;
   const quizz = await db.query.quizzes.findFirst({
     where: eq(quizzes.id, parseInt(quizzId)),
@@ -35,12 +27,7 @@ const page = async ({
     return <div>Quizz not found</div>;
   }
 
-  return (
-    <QuizzQuestions
-      quizz={quizz}
-      accessToken={account?.access_token!}
-    />
-  );
+  return <QuizzQuestions quizz={quizz} />;
 };
 
 export default page;

@@ -1,15 +1,10 @@
-import { auth, signOut } from "@/auth";
+"use client";
 import Link from "next/link";
-import UserSection from "@/components/layout/components/UserSection";
+import { SignIn, SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import UserSection from "./components/UserSection";
 
-const LayoutHeader = async () => {
-  const session = await auth();
-
-  const actionFunction = async () => {
-    "use server";
-    await signOut();
-  };
-
+const LayoutHeader = () => {
+  const user = useUser();
   return (
     <header className="sticky top-0 bg-primary/80 backdrop-blur-md text-primary-foreground">
       <nav className="container  py-2.5">
@@ -20,10 +15,13 @@ const LayoutHeader = async () => {
           >
             MagicQuizz
           </Link>
-          <UserSection
-            session={session}
-            actionFunction={actionFunction}
-          />
+          {user.isLoaded && user?.user && (
+            <div className="flex items-center gap-4">
+              <UserSection user={user.user} />
+            </div>
+          )}
+
+          {user.isLoaded && !user?.user && <SignIn />}
         </div>
       </nav>
     </header>

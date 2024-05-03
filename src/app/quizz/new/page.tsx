@@ -1,19 +1,18 @@
 import UploadDoc from "../UploadDoc";
-import { auth } from "@/auth";
 import { getUserSubscription } from "@/actions/userSubscriptions";
 import UpgradePlan from "../UpgradePlan";
 import { redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs/server";
 
 const page = async () => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     redirect("/sign-in");
   }
 
   const subscribed: boolean | null | undefined = await getUserSubscription({
-    userId,
+    userId: user.id,
   });
 
   return (

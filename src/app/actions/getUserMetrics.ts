@@ -1,13 +1,12 @@
 import { quizzes, questions, quizzSubmissions, users } from "@/db/schema";
-import { auth } from "@/auth";
 import { db } from "@/db";
 import { count, eq, avg } from "drizzle-orm";
+import { currentUser } from "@clerk/nextjs/server";
 
 const getUserMetrics = async () => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return;
   }
 
@@ -15,7 +14,7 @@ const getUserMetrics = async () => {
   const numQuizzes = await db
     .select({ value: count() })
     .from(quizzes)
-    .where(eq(quizzes.userId, userId));
+    .where(eq(quizzes.userId, user.id));
 
   // get total # of questions
   const numQuestions = await db
@@ -23,7 +22,7 @@ const getUserMetrics = async () => {
     .from(questions)
     .innerJoin(quizzes, eq(questions.quizzId, quizzes.id))
     .innerJoin(users, eq(quizzes.userId, users.id))
-    .where(eq(users.id, userId));
+    .where(eq(users.id, user.id));
 
   // get total # of submissions
   const numSubmissions = await db
@@ -31,7 +30,7 @@ const getUserMetrics = async () => {
     .from(quizzSubmissions)
     .innerJoin(quizzes, eq(quizzSubmissions.quizzId, quizzes.id))
     .innerJoin(users, eq(quizzes.userId, users.id))
-    .where(eq(users.id, userId));
+    .where(eq(users.id, user.id));
 
   // get the average score
   const avgScore = await db
@@ -39,7 +38,7 @@ const getUserMetrics = async () => {
     .from(quizzSubmissions)
     .innerJoin(quizzes, eq(quizzSubmissions.quizzId, quizzes.id))
     .innerJoin(users, eq(quizzes.userId, users.id))
-    .where(eq(users.id, userId));
+    .where(eq(users.id, user.id));
 
   return [
     { label: "# of Quizzes", value: numQuizzes[0].value },

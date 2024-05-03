@@ -1,23 +1,23 @@
-import React from 'react'
-import { auth, signIn } from '@/auth';
-import ManageSubscription from './ManageSubscription';
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import React from "react";
+import ManageSubscription from "./ManageSubscription";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 const page = async () => {
-  const session = await auth();
+  const user = await currentUser();
 
-  if (!session || !session.user || !session.user.id) {
-    signIn();
-    return null;
+  if (!user) {
+    redirect("/sign-in");
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id)
-  })
+  const userInDb = await db.query.users.findFirst({
+    where: eq(users.id, user.id),
+  });
 
-  const plan = user?.subscribed ? 'premium' : 'free';
+  const plan = userInDb?.subscribed ? "premium" : "free";
 
   return (
     <div className="p-4 border rounded-md">
@@ -25,7 +25,7 @@ const page = async () => {
       <p className="mb-2">You are currently on a {plan} plan</p>
       <ManageSubscription />
     </div>
-  )
-}
+  );
+};
 
 export default page;

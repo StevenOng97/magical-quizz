@@ -21,7 +21,6 @@ type Quizz = InferSelectModel<typeof quizzes> & { questions: Question[] };
 
 type Props = {
   quizz: Quizz;
-  accessToken: string;
 };
 
 export default function QuizzQuestions(props: Props) {

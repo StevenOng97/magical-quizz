@@ -1,20 +1,17 @@
 import { db } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { attachments, quizzes } from "@/db/schema";
-import { auth } from "@/auth";
 import QuizzesTable, { Data } from "./quizzesTable";
 import getUserMetrics from "@/actions/getUserMetrics";
 import getHeatMapData from "@/actions/getHeatMapData";
 import MetricCard from "./metricCard";
 import SubmissionsHeatMap from "./heatMap";
-import SubscribeBtn from "../billing/SubscribeBtn";
-import { PRICE_ID } from "@/lib/utils";
+import { currentUser } from "@clerk/nextjs/server";
 
 const page = async () => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return <p>User not found</p>;
   }
 
@@ -28,7 +25,7 @@ const page = async () => {
         eq(attachments.resourceType, "quizz")
       )
     )
-    .where(eq(quizzes.userId, userId))) as Data[];
+    .where(eq(quizzes.userId, user.id))) as Data[];
 
   const userData = await getUserMetrics();
   const heatMapData = await getHeatMapData();

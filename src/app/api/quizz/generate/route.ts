@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { client } from "@/trigger";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { auth } from "@/auth";
 import getRedisInstance from "@/lib/upstash/redis";
 import { v4 as uuidv4 } from "uuid";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.formData();
@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error }, { status: 500 });
   }
 
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
   if (!data) {
     return NextResponse.json(
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
   });
 
   const payload = {
-    userId,
+    userId: user?.id,
     fileId: id,
     fileName,
     originalFileName: document.name,

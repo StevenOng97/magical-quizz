@@ -1,14 +1,13 @@
-import { auth } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { stripe } from "@/lib/stripe";
+import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return new Response(
       JSON.stringify({
         error: "Unauthorized",
@@ -19,8 +18,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, userId),
+  const userInDB = await db.query.users.findFirst({
+    where: eq(users.id, user.id),
   });
 
   if (!user) {
@@ -35,9 +34,9 @@ export async function POST(req: Request) {
   }
 
   let customer;
-  if (user?.stripeCustomerId) {
+  if (userInDB?.stripeCustomerId) {
     customer = {
-      id: user.stripeCustomerId,
+      id: userInDB.stripeCustomerId,
     };
   } else {
     const customerData: {
@@ -46,7 +45,7 @@ export async function POST(req: Request) {
       };
     } = {
       metadata: {
-        dbId: userId,
+        dbId: user.id,
       },
     };
     const response = await stripe.customers.create(customerData);
