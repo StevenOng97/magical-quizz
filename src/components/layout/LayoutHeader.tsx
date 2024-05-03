@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { SignIn, SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import UserSection from "./components/UserSection";
 
 const LayoutHeader = () => {
@@ -21,7 +21,7 @@ const LayoutHeader = () => {
             </div>
           )}
 
-          {user.isLoaded && !user?.user && <SignIn />}
+          {user.isLoaded && !user?.user && <SignInButton />}
         </div>
       </nav>
     </header>
