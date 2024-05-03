@@ -1,5 +1,4 @@
 import React from "react";
-import { clsx } from "clsx";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -18,23 +17,14 @@ const ResultCard = (props: Props) => {
     ? "Correct!"
     : "Incorrect! The correct answer is: " + props.correctAnswer;
 
-  const borderClasses = clsx({
-    "border-green-500": isCorrect,
-    "border-red-500": !isCorrect,
-  });
-
   return (
     <div
       className={cn(
-        borderClasses,
-        "border-2",
-        "rounded-lg",
-        "p-4",
-        "text-center",
-        "text-lg",
-        "font-semibold",
-        "my-4",
-        "bg-secondary"
+        "border-2 rounded-lg p-4 text-center text-lg font-semibold my-4",
+        {
+          "bg-leaf text-black": isCorrect,
+          "bg-destructive": !isCorrect,
+        }
       )}
     >
       {text}

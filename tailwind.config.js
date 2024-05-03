@@ -38,6 +38,14 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        leaf: {
+          DEFAULT: "hsl(var(--leaf))",
+          foreground: "hsl(var(--leaf-foreground))",
+        },
+        "leaf-bold": {
+          DEFAULT: "hsl(var(--leaf-bold))",
+          foreground: "hsl(var(--leaf-bold-foreground))",
+        },  
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",

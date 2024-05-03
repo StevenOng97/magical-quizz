@@ -10,10 +10,12 @@ import {
   questionAnswers,
   questions as DbQuestions,
   quizzes,
-  attachments,
 } from "@/db/schema";
 import { saveSubmission } from "@/actions/saveSubmissions";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+const questionIndex = ["A.", "B.", "C.", "D."];
 
 type Answer = InferSelectModel<typeof questionAnswers>;
 type Question = InferSelectModel<typeof DbQuestions> & { answers: Answer[] };
@@ -116,7 +118,7 @@ export default function QuizzQuestions(props: Props) {
             variant="outline"
             onClick={handlePressPrev}
           >
-            <ChevronLeft />
+            <ChevronLeft color="black" />
           </Button>
           <ProgressBar value={(currentQuestion / questions.length) * 100} />
           <Button
@@ -124,7 +126,7 @@ export default function QuizzQuestions(props: Props) {
             variant="outline"
             onClick={handleExit}
           >
-            <X />
+            <X color="black" />
           </Button>
         </header>
       </div>
@@ -138,11 +140,14 @@ export default function QuizzQuestions(props: Props) {
           </div>
         ) : (
           <div>
-            <h2 className="text-3xl font-bold">
-              {questions[currentQuestion].questionText}
+            <h2 className="text-xl font-bold">
+              <p className="text-opacity-70 text-muted-foreground">
+                Question {currentQuestion + 1} of {questions.length}
+              </p>
+              <p>{questions[currentQuestion].questionText}</p>
             </h2>
             <div className="grid grid-cols-1 gap-6 mt-6">
-              {questions[currentQuestion].answers.map((answer) => {
+              {questions[currentQuestion].answers.map((answer, idx) => {
                 const variant =
                   selectedAnswer === answer.id
                     ? answer.isCorrect
@@ -157,9 +162,15 @@ export default function QuizzQuestions(props: Props) {
                     onClick={() =>
                       handleAnswer(answer, questions[currentQuestion].id)
                     }
-                    className="disabled:opacity-100"
+                    className={cn("disabled:opacity-100 text-black ", {
+                      "bg-leaf": answer.isCorrect,
+                      "text-destructive-foreground bg-destructive":
+                        !answer.isCorrect,
+                    })}
                   >
-                    <p className="whitespace-normal">{answer.answerText}</p>
+                    <p className="whitespace-normal w-full text-left">
+                      {questionIndex[idx]} {answer.answerText}
+                    </p>
                   </Button>
                 );
               })}
@@ -188,6 +199,7 @@ export default function QuizzQuestions(props: Props) {
           ) : (
             <Button
               size="lg"
+              variant="secondary"
               onClick={handleNext}
               className="flex-1"
             >
