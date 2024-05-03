@@ -7,9 +7,8 @@ import {
 import { NavMenu } from "@/components/NavMenu";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import SignOutBtn from "@/components/layout/components/SignOutBtn";
+import useLoginDialog from "@/lib/hooks/context/useLoginDialog";
 
 type IProps = {
   session: Session | null;
@@ -17,8 +16,7 @@ type IProps = {
 };
 
 const UserSection = ({ session, actionFunction }: IProps) => {
-  const pathName = usePathname();
-  if (pathName === "/sign-in") return <></>;
+  const { setOpen } = useLoginDialog();
   return (
     <div>
       {session?.user ? (
@@ -42,9 +40,12 @@ const UserSection = ({ session, actionFunction }: IProps) => {
           <SignOutBtn actionFunction={actionFunction} />
         </div>
       ) : (
-        <Link href="sign-in">
-          <Button variant="secondary">Sign In</Button>
-        </Link>
+        <Button
+          onClick={() => setOpen(true)}
+          variant="secondary"
+        >
+          Sign In
+        </Button>
       )}
     </div>
   );

@@ -9,7 +9,7 @@ const page = async () => {
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect("/sign-in");
+    redirect("/");
   }
 
   const subscribed: boolean | null | undefined = await getUserSubscription({
