@@ -21,7 +21,7 @@ const UploadDoc = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const [redisKey, seyRedisKey] = useState<string>();
+  const [redisKey, setRedisKey] = useState<string>();
 
   useEffect(() => {
     if (!redisKey) return;
@@ -64,7 +64,7 @@ const UploadDoc = () => {
       });
       if (res.status === 200) {
         const { keyId } = await res.json();
-        seyRedisKey(keyId);
+        setRedisKey(keyId);
       }
     } catch (e) {
       console.log("error while generating", e);
