@@ -82,14 +82,14 @@ client.defineJob({
       return joinnedText;
     });
 
-    io.runTask("save-to-vector-store", async () => {
+    await io.runTask("save-to-vector-store", async () => {
       const vectorStore = getSupabaseVectorStore();
       await vectorStore.addDocuments(documentsWithMetadata);
     });
 
     const quizzData = await io.runTask("prompt-ai", async () => {
       const prompt =
-        "given the text which is a summary of the document, generate a quiz based on the text. The quizz should includes atleast 5 questions, each questions includes atleast 4 answers. Return json only that contains a quizz object with fields: name, description and questions. The questions is an array of objects with fields: questionText, answers. The answers is an array of objects with fields: answerText, isCorrect.";
+        "given the text which is a summary of the document, generate a quiz based on the text. The quizz should includes atleast 5 questions, each questions includes atleast 4 answers and only one of them is correct. Return json only that contains a quizz object with fields: name, description and questions. The questions is an array of objects with fields: questionText, answers. The answers is an array of objects with fields: answerText, isCorrect.";
 
       const parser = StructuredOutputParser.fromZodSchema(quizzSchema);
 

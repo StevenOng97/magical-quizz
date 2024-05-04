@@ -1,13 +1,12 @@
-import { quizzes, questions, quizzSubmissions, users } from "@/db/schema";
-import { auth } from "@/auth";
+import { quizzes, quizzSubmissions, users } from "@/db/schema";
 import { db } from "@/db";
-import { count, eq, avg, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { currentUser } from "@clerk/nextjs/server";
 
 const getHeatMapData = async () => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return;
   }
 

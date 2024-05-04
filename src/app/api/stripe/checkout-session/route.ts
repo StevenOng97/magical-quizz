@@ -1,15 +1,14 @@
 import { stripe } from "@/lib/stripe";
-import { auth } from "@/auth";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import { users } from "@/db/schema";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
   const { price, quantity = 1 } = await req.json();
-  const userSession = await auth();
-  const userId = userSession?.user?.id;
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return new Response(
       JSON.stringify({
         error: "Unauthorized",
@@ -20,14 +19,14 @@ export async function POST(req: Request) {
     );
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, userId),
+  const userInDb = await db.query.users.findFirst({
+    where: eq(users.id, user.id),
   });
   let customer;
 
-  if (user?.stripeCustomerId) {
+  if (userInDb?.stripeCustomerId) {
     customer = {
-      id: user.stripeCustomerId,
+      id: userInDb.stripeCustomerId,
     };
   } else {
     const customerData: {
@@ -36,7 +35,7 @@ export async function POST(req: Request) {
       };
     } = {
       metadata: {
-        dbId: userId,
+        dbId: user.id,
       },
     };
 
@@ -49,7 +48,7 @@ export async function POST(req: Request) {
       .set({
         stripeCustomerId: customer.id,
       })
-      .where(eq(users.id, userId));
+      .where(eq(users.id, user.id));
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";

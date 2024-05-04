@@ -6,11 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "ngrok": "ngrok http 3000"
+    "lint": "next lint"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.4.0",
+    "@clerk/nextjs": "^5.0.6",
     "@hookform/resolvers": "^3.3.4",
     "@huggingface/inference": "^2.6.7",
     "@langchain/community": "^0.0.51",
@@ -55,7 +55,7 @@
     "js-cookie": "^3.0.5",
     "langchain": "^0.1.30",
     "lucide-react": "^0.309.0",
-    "next": "14.0.1",
+    "next": "14.2.2",
     "next-auth": "^5.0.0-beta.5",
     "next-themes": "^0.3.0",
     "ngrok": "^5.0.0-beta.2",
@@ -74,6 +74,7 @@
     "remark-math": "^6.0.0",
     "sonner": "^1.4.41",
     "stripe": "^14.14.0",
+    "svix": "^1.22.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",
