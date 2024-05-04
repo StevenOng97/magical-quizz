@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
-import { ChevronLeft, X } from "lucide-react";
-import ResultCard from "./ResultCard";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import QuizzSubmission from "./QuizzSubmission";
 import { InferSelectModel } from "drizzle-orm";
 import {
@@ -14,6 +13,7 @@ import {
 import { saveSubmission } from "@/actions/saveSubmissions";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import CircularProgressBar from "@/components/CircularProgressBar";
 
 const questionIndex = ["A.", "B.", "C.", "D."];
 
@@ -34,19 +34,62 @@ export default function QuizzQuestions(props: Props) {
     { questionId: number; answerId: number }[]
   >([]);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [remainingTime, setRemainingTime] = useState(
+    questions.length * 30 * 1000
+  );
   const router = useRouter();
 
-  const handleNext = () => {
-    if (!started) {
-      setStarted(true);
+  // Convert remaining time to hh:mm:ss format
+  const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+  const milliseconds = remainingTime % 1000;
+
+  // Format time to have leading zeroes if necessary
+  const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
+
+  const scorePercentage: number = Math.round((score / questions.length) * 100);
+  const selectedAnswer: number | null | undefined = userAnswers.find(
+    (item) => item.questionId === questions[currentQuestion].id
+  )?.answerId;
+
+  const currentProgress: number = Math.round(
+    (userAnswers.length / questions.length) * 100
+  );
+  const quizzCompletedCheck = userAnswers.length === questions.length;
+  const firstQuestion = currentQuestion === 0;
+  const lastQuestion = currentQuestion === questions.length - 1;
+
+  useEffect(() => {
+    if (!started) return;
+    const timer = setInterval(() => {
+      setRemainingTime((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prevTime - 50; // Decrement time by 1 second
+      });
+    }, 50);
+
+    if (quizzCompletedCheck) {
+      clearInterval(timer);
       return;
     }
 
-    if (currentQuestion < questions.length - 1) {
+    return () => clearInterval(timer); // Cleanup the timer on unmount
+  }, [started, quizzCompletedCheck]);
+
+  const handleStart = () => {
+    if (!started) {
+      setStarted(true);
+    }
+  };
+
+  const handleNext = () => {
+    if (!lastQuestion) {
       setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setSubmitted(true);
-      return;
     }
   };
 
@@ -76,7 +119,7 @@ export default function QuizzQuestions(props: Props) {
   };
 
   const handlePressPrev = () => {
-    if (currentQuestion !== 0) {
+    if (!firstQuestion) {
       setCurrentQuestion((prevCurrentQuestion) => prevCurrentQuestion - 1);
     }
   };
@@ -84,20 +127,6 @@ export default function QuizzQuestions(props: Props) {
   const handleExit = () => {
     router.push("/dashboard");
   };
-
-  const scorePercentage: number = Math.round((score / questions.length) * 100);
-  const selectedAnswer: number | null | undefined = userAnswers.find(
-    (item) => item.questionId === questions[currentQuestion].id
-  )?.answerId;
-  const isCorrect: boolean | null | undefined =
-    questions[currentQuestion].answers.findIndex(
-      (answer) => answer.id === selectedAnswer
-    ) !== -1
-      ? questions[currentQuestion].answers.find(
-          (answer) => answer.id === selectedAnswer
-        )?.isCorrect
-      : null;
-
   if (submitted) {
     return (
       <QuizzSubmission
@@ -109,104 +138,132 @@ export default function QuizzQuestions(props: Props) {
   }
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="position-sticky top-0 z-10 shadow-md py-4 w-full">
-        <header className="grid grid-cols-[auto,1fr,auto] grid-flow-col items-center justify-between py-2 gap-2">
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={handlePressPrev}
-          >
-            <ChevronLeft color="black" />
-          </Button>
-          <ProgressBar value={(currentQuestion / questions.length) * 100} />
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={handleExit}
-          >
-            <X color="black" />
-          </Button>
-        </header>
-      </div>
-      <main className="flex justify-center flex-1">
-        {!started ? (
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">{name}</h1>
-            <h2 className="text-md font-bold text-muted-foreground">
-              {description}
-            </h2>
+    <div className="flex flex-col bg-white/10 rounded-xl h-[90%] w-[90%] m-auto">
+      <div className="w-[90%] h-[90%] p-20 m-auto rounded-xl bg-red-200/20 flex flex-col justify-center">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-5">
+            <Clock
+              height={40}
+              width={40}
+            />
+            <div>
+              <p>Time Remaining</p>
+              <p className="text-2xl font-bold">{formattedTime}</p>
+            </div>
           </div>
-        ) : (
-          <div>
-            <h2 className="text-xl font-bold">
-              <p className="text-opacity-70 text-muted-foreground">
-                Question {currentQuestion + 1} of {questions.length}
-              </p>
-              <p>{questions[currentQuestion].questionText}</p>
-            </h2>
-            <div className="grid grid-cols-1 gap-6 mt-6">
-              {questions[currentQuestion].answers.map((answer, idx) => {
-                const variant =
-                  selectedAnswer === answer.id
-                    ? answer.isCorrect
-                      ? "default"
-                      : "destructive"
-                    : "outline";
-                return (
-                  <Button
-                    key={answer.id}
-                    disabled={!!selectedAnswer}
-                    variant={variant}
-                    onClick={() =>
-                      handleAnswer(answer, questions[currentQuestion].id)
-                    }
-                    className={cn("disabled:opacity-100 text-black ", {
-                      "bg-leaf": answer.isCorrect,
-                      "text-destructive-foreground bg-destructive":
-                        !answer.isCorrect,
-                    })}
-                  >
-                    <p className="whitespace-normal w-full text-left">
-                      {questionIndex[idx]} {answer.answerText}
-                    </p>
-                  </Button>
-                );
-              })}
+          <Button
+            variant="secondary"
+            onClick={handleSubmit}
+            disabled={!quizzCompletedCheck}
+            className="font-bold text-xl"
+          >
+            Submit
+          </Button>
+        </div>
+        <main className="flex justify-center items-center flex-1 py-10">
+          {!started && (
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-2">{name}</h1>
+              <h2 className="text-md font-bold">
+                <p className="text-muted-foreground">{description}</p>
+                <div className="mt-10">
+                  <p>Number of questions: {questions.length}</p>
+                  <p>Quizz Duration: {`${minutes}:${seconds}`}</p>
+                </div>
+              </h2>
+            </div>
+          )}
+          {started && (
+            <div className="flex flex-col-reverse lg:flex-row justify-between w-full gap-5 lg:gap-20">
+              <div>
+                <h2 className="text-xl font-bold">
+                  <p className="text-opacity-70 text-muted-foreground">
+                    Question {currentQuestion + 1} of {questions.length}
+                  </p>
+                  <p>{questions[currentQuestion].questionText}</p>
+                </h2>
+                <div className="grid grid-cols-1 gap-6 mt-6">
+                  {questions[currentQuestion].answers.map((answer, idx) => {
+                    const variant =
+                      selectedAnswer === answer.id
+                        ? answer.isCorrect
+                          ? "leaf"
+                          : "destructive"
+                        : "outline";
+                    return (
+                      <Button
+                        key={answer.id}
+                        disabled={!!selectedAnswer}
+                        variant={variant}
+                        onClick={() =>
+                          handleAnswer(answer, questions[currentQuestion].id)
+                        }
+                        className={cn(
+                          "disabled:opacity-100 text-black h-auto text-xs lg:text-base",
+                          {
+                            "bg-leaf": !!selectedAnswer && answer.isCorrect,
+                          }
+                        )}
+                      >
+                        <p className="whitespace-normal w-full text-left">
+                          {questionIndex[idx]} {answer.answerText}
+                        </p>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex justify-center items-center">
+                <CircularProgressBar
+                  percentage={currentProgress}
+                  strokeWidth={16}
+                  text={`${userAnswers.length}/${questions.length}`}
+                />
+              </div>
+            </div>
+          )}
+        </main>
+        <div className="footer pb-9 px-6 relative mb-0">
+          {!started && (
+            <div className="w-full flex justify-center">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={handleStart}
+                className="px-20 font-bold"
+              >
+                START
+              </Button>
+            </div>
+          )}
+        </div>
+        {started && (
+          <div className="position-sticky top-0 z-10 shadow-md py-4 w-full">
+            <div className="grid grid-cols-[auto,1fr,auto] grid-flow-col items-center justify-between py-2 gap-2">
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={handlePressPrev}
+                disabled={firstQuestion}
+              >
+                <ChevronLeft color="black" />
+              </Button>
+              <ProgressBar
+                value={(userAnswers.length / questions.length) * 100}
+              />
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={handleNext}
+                disabled={lastQuestion}
+              >
+                <ChevronRight color="black" />
+              </Button>
             </div>
           </div>
         )}
-      </main>
-      <footer className="footer pb-9 px-6 relative mb-0">
-        <ResultCard
-          isCorrect={isCorrect}
-          correctAnswer={
-            questions[currentQuestion].answers.find(
-              (answer) => answer.isCorrect === true
-            )?.answerText || ""
-          }
-        />
-        <div className="w-full flex justify-center">
-          {currentQuestion === questions.length - 1 ? (
-            <Button
-              size="lg"
-              onClick={handleSubmit}
-              className="flex-1"
-            >
-              Submit
-            </Button>
-          ) : (
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={handleNext}
-              className="flex-1"
-            >
-              {!started ? "Start" : "Next"}
-            </Button>
-          )}
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }
