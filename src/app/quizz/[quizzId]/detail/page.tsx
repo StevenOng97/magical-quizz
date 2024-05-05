@@ -2,6 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 import { AI, Message, getUIStateFromAIState } from "@/lib/chat/actions";
 import { Chat } from "@/components/chat";
 import { getChat } from "@/app/actions/useChat";
+import PdfPreview from "@/components/PdfPreview";
+import { attachments, db } from "@/db";
+import { eq } from "drizzle-orm";
 
 const page = async ({
   params,
@@ -23,15 +26,23 @@ const page = async ({
     uiState = getUIStateFromAIState(chat!);
   }
 
+  const attachmentFile = await db
+    .select()
+    .from(attachments)
+    .where(eq(attachments.resourceId, Number(quizzId)));
+
   return (
     <AI
       initialAIState={{ quizzId, messages }}
       initialUIState={uiState}
     >
-      <Chat
-        id={id}
-        initialMessages={messages}
-      />
+      <div className="flex border border-white h-[90%] m-auto w-[90%]">
+        <PdfPreview url={attachmentFile[0].filePath} />
+        <Chat
+          id={id}
+          initialMessages={messages}
+        />
+      </div>
     </AI>
   );
 };
