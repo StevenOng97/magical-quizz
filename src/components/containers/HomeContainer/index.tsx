@@ -2,7 +2,7 @@ import Guide from "@/components/containers/HomeContainer/components/Guide";
 import Hero from "@/components/containers/HomeContainer/components/Hero";
 import PreviewImage from "@/components/containers/HomeContainer/components/PreviewImage";
 
-const HomeContainer = () => {
+const HomeContainer = async () => {
   return (
     <div className="flex flex-col">
       <main className="flex justify-center">

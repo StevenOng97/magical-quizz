@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import Bar from "@/components/Bar";
 import Image from "next/image";
 import { useReward } from "react-rewards";
-import { ChevronLeft, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
   scorePercentage: number;
@@ -36,7 +37,7 @@ const QuizzSubmission = (props: Props) => {
             size="icon"
             variant="outline"
           >
-            <X />
+            <X color="black" />
           </Button>
         </header>
       </div>
@@ -74,6 +75,16 @@ const QuizzSubmission = (props: Props) => {
             </div>
           </>
         )}
+        <Button
+          variant="outline"
+          onClick={() => location.reload()}
+          className="text-black"
+        >
+          Try again
+        </Button>
+        <Button variant="secondary">
+          <Link href="/dashboard">Go to Dashboard</Link>
+        </Button>
       </main>
     </div>
   );

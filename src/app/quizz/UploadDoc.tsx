@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ComponentSpinner from "@/components/ComponentSpinner";
 
 const DEFAULT_NUMBER_OF_QUIZ = 5;
 
@@ -21,7 +22,7 @@ const UploadDoc = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const [redisKey, seyRedisKey] = useState<string>();
+  const [redisKey, setRedisKey] = useState<string>();
 
   useEffect(() => {
     if (!redisKey) return;
@@ -64,12 +65,12 @@ const UploadDoc = () => {
       });
       if (res.status === 200) {
         const { keyId } = await res.json();
-        seyRedisKey(keyId);
+        setRedisKey(keyId);
       }
     } catch (e) {
+      setIsLoading(false);
       console.log("error while generating", e);
     }
-    setIsLoading(false);
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,8 +82,16 @@ const UploadDoc = () => {
 
   return (
     <div className="w-full">
+      {!isLoading && (
+        <h2 className="text-3xl font-bold mb-4">
+          What do you want to be quizzed about today?
+        </h2>
+      )}
       {isLoading ? (
-        <p>Loading...</p>
+        <div>
+          <ComponentSpinner />
+          <p>Generating your quizz....</p>
+        </div>
       ) : (
         <form
           className="w-full"
@@ -92,7 +101,7 @@ const UploadDoc = () => {
             htmlFor="document"
             className="bg-secondary w-full flex h-20 rounded-md border-4 border-dashed border-blue-900 relative max-w-96 m-auto"
           >
-            <div className="absolute inset-0 m-auto flex justify-center items-center">
+            <div className="absolute text-black inset-0 m-auto flex justify-center items-center">
               {document && document?.name ? document.name : "Drag a file"}
             </div>
             <input
@@ -102,7 +111,7 @@ const UploadDoc = () => {
               onChange={handleDocumentUpload}
             />
           </label>
-          <p className="text-secondary-foreground my-2">
+          <p className="text-primary-foreground my-2">
             Supported file types: pdf
           </p>
           {error ? <p className="text-red-600">{error}</p> : null}
@@ -114,6 +123,7 @@ const UploadDoc = () => {
                   <Input
                     value={numberOfQuiz}
                     type="number"
+                    className="text-black"
                     onChange={(e) => {
                       const newValue = Number(e.target.value);
                       setNumberOfQuiz(newValue > 0 ? newValue : 1);
@@ -126,6 +136,7 @@ const UploadDoc = () => {
                   <Input
                     value={answerPerQuizz}
                     type="number"
+                    className="text-black"
                     onChange={(e) => {
                       const newValue = Number(e.target.value);
                       setAnswerPerQuizz(newValue > 0 ? newValue : 1);
@@ -136,6 +147,7 @@ const UploadDoc = () => {
                 <div className="text-left grow">
                   <Label>Custom Prompt</Label>
                   <Input
+                    className="text-black"
                     value={customPrompt}
                     onChange={(e) => setCustomPrompt(e.target.value)}
                   />
@@ -152,6 +164,7 @@ const UploadDoc = () => {
                     <RadioGroupItem
                       value="quizzUrl"
                       id="quizzUrl"
+                      className="text-white border-white"
                     />
                     <Label htmlFor="quizzUrl">Quizz URL</Label>
                   </div>
@@ -159,6 +172,7 @@ const UploadDoc = () => {
                     <RadioGroupItem
                       value="googleForm"
                       id="googleForm"
+                      className="text-white border-white"
                     />
                     <Label htmlFor="googleForm">Google Form</Label>
                   </div>
@@ -166,6 +180,7 @@ const UploadDoc = () => {
                     <RadioGroupItem
                       value="pdfFile"
                       id="pdfFile"
+                      className="text-white border-white"
                     />
                     <Label htmlFor="pdfFile">PDF File</Label>
                   </div>
@@ -175,6 +190,7 @@ const UploadDoc = () => {
                 size="lg"
                 className="mt-5"
                 type="submit"
+                variant="secondary"
               >
                 Generate Quizz 🪄
               </Button>

@@ -7,6 +7,7 @@ import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import LayoutHeader from "@/components/layout/LayoutHeader";
 import { Providers } from "@/components/providers";
 import { ClerkProvider } from "@clerk/nextjs";
+import LoginDialogContextWrapper from "@/lib/context/LoginDialogContextWrapper";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -17,12 +18,11 @@ export const metadata: Metadata = {
   title: "Magical Quizz",
   description: "Magicial Quizz Generator",
 };
-
-export default function RootLayout({
-  children,
-}: {
+type IProps = {
   children: React.ReactNode;
-}) {
+};
+
+export default function RootLayout({ children }: Readonly<IProps>) {
   return (
     <html
       lang="en"
@@ -46,24 +46,26 @@ export default function RootLayout({
         }}
       >
         <ReactQueryProvider>
-          <body
-            className={cn(
-              "min-h-screen bg-primary text-primary-foreground font-sans antialiased",
-              fontSans.variable
-            )}
-          >
-            <ThemeProvider
-              attribute="class"
-              enableSystem
-              forcedTheme="light"
-              disableTransitionOnChange
+          <LoginDialogContextWrapper>
+            <body
+              className={cn(
+                "min-h-screen bg-primary text-primary-foreground font-sans antialiased",
+                fontSans.variable
+              )}
             >
-              <Providers>
-                <LayoutHeader />
-                {children}
-              </Providers>
-            </ThemeProvider>
-          </body>
+              <ThemeProvider
+                attribute="class"
+                enableSystem
+                forcedTheme="light"
+                disableTransitionOnChange
+              >
+                <Providers>
+                  <LayoutHeader />
+                  {children}
+                </Providers>
+              </ThemeProvider>
+            </body>
+          </LoginDialogContextWrapper>
         </ReactQueryProvider>
       </ClerkProvider>
     </html>

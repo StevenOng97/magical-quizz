@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import UserSection from "./components/UserSection";
+import { Button } from "@/components/ui/button";
 
 const LayoutHeader = () => {
   const user = useUser();
@@ -21,7 +22,11 @@ const LayoutHeader = () => {
             </div>
           )}
 
-          {user.isLoaded && !user?.user && <SignInButton />}
+          {user.isLoaded && !user?.user && (
+            <SignInButton>
+              <Button variant="secondary">Sign in</Button>
+            </SignInButton>
+          )}
         </div>
       </nav>
     </header>

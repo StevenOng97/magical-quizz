@@ -1,5 +1,4 @@
 "use client";
-import { Session } from "next-auth";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,8 +8,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { SignOutButton } from "@clerk/nextjs";
+import { UserResource } from "@clerk/types";
 
-const UserSection = ({ user }: any) => {
+const UserSection = ({ user }: { user: UserResource }) => {
   const pathName = usePathname();
   if (pathName === "/sign-in") return <></>;
   return (
@@ -21,7 +21,7 @@ const UserSection = ({ user }: any) => {
             <Button variant="ghost">
               <Image
                 src={user?.imageUrl}
-                alt={user?.name}
+                alt={user?.fullName ?? "user image"}
                 width={32}
                 height={32}
                 className="rounded-full"
