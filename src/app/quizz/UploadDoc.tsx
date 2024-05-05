@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ComponentSpinner from "@/components/ComponentSpinner";
 
 const DEFAULT_NUMBER_OF_QUIZ = 5;
 
@@ -67,9 +68,9 @@ const UploadDoc = () => {
         setRedisKey(keyId);
       }
     } catch (e) {
+      setIsLoading(false);
       console.log("error while generating", e);
     }
-    setIsLoading(false);
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,8 +82,16 @@ const UploadDoc = () => {
 
   return (
     <div className="w-full">
+      {!isLoading && (
+        <h2 className="text-3xl font-bold mb-4">
+          What do you want to be quizzed about today?
+        </h2>
+      )}
       {isLoading ? (
-        <p>Loading...</p>
+        <div>
+          <ComponentSpinner />
+          <p>Generating your quizz....</p>
+        </div>
       ) : (
         <form
           className="w-full"

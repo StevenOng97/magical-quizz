@@ -75,6 +75,13 @@ const QuizzSubmission = (props: Props) => {
             </div>
           </>
         )}
+        <Button
+          variant="outline"
+          onClick={() => location.reload()}
+          className="text-black"
+        >
+          Try again
+        </Button>
         <Button variant="secondary">
           <Link href="/dashboard">Go to Dashboard</Link>
         </Button>
