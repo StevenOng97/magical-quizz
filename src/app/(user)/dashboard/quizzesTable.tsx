@@ -37,7 +37,7 @@ const QuizzesTable = (props: Props) => {
               <td>{data.quizzes.description}</td>
               <td>
                 <Link
-                  href={`${data?.attachments?.filePath}`}
+                  href={`/quizz/${data.quizzes.id}/detail`}
                   target="_blank"
                   className="bg-red-200 w-full"
                 >

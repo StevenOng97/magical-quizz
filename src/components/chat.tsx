@@ -40,16 +40,16 @@ export function Chat({ id, className }: ChatProps) {
 
   return (
     <div
-      className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
+      className="flex flex-col w-full justify-between peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
       ref={scrollRef}
     >
       <div
-        className={cn("pb-[200px] pt-4 md:pt-10", className)}
+        className={cn("overflow-y-scroll p-4 grow", className)}
         ref={messagesRef}
       >
         {messages.length ? <ChatList messages={messages} /> : <EmptyScreen />}
         <div
-          className="h-px w-full"
+          className="h-px"
           ref={visibilityRef}
         />
       </div>

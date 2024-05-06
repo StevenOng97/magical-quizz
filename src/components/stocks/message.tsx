@@ -17,11 +17,11 @@ import { useStreamableText } from "@/lib/hooks/use-streamable-text";
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="group relative flex items-start md:-ml-12">
+    <div className="group relative flex items-start">
       <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
         <IconUser />
       </div>
-      <div className="ml-4 flex-1 space-y-2 overflow-hidden pl-2">
+      <div className="ml-2 flex-1 space-y-2 overflow-hidden pl-2">
         {children}
       </div>
     </div>
@@ -38,7 +38,7 @@ export function BotMessage({
   const text = useStreamableText(content);
 
   return (
-    <div className={cn("group relative flex items-start md:-ml-12", className)}>
+    <div className={cn("group relative flex items-start", className)}>
       <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
         <img
           className="size-6"
@@ -46,7 +46,7 @@ export function BotMessage({
           alt="gemini logo"
         />
       </div>
-      <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
+      <div className="ml-2 flex-1 space-y-2 overflow-hidden px-1">
         <MemoizedReactMarkdown
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
@@ -104,7 +104,7 @@ export function BotCard({
   showAvatar?: boolean;
 }) {
   return (
-    <div className="group relative flex items-start md:-ml-12">
+    <div className="group relative flex items-start">
       <div
         className={cn(
           "bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm",
@@ -117,7 +117,7 @@ export function BotCard({
           alt="gemini logo"
         />
       </div>
-      <div className="ml-4 flex-1 pl-2">{children}</div>
+      <div className="ml-2 flex-1 pl-2">{children}</div>
     </div>
   );
 }
@@ -136,7 +136,7 @@ export function SystemMessage({ children }: { children: React.ReactNode }) {
 
 export function SpinnerMessage() {
   return (
-    <div className="group relative flex items-start md:-ml-12">
+    <div className="group relative flex items-start">
       <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
         <img
           className="size-6"
@@ -144,7 +144,7 @@ export function SpinnerMessage() {
           alt="gemini logo"
         />
       </div>
-      <div className="ml-4 h-[24px] flex flex-row items-center flex-1 space-y-2 overflow-hidden px-1">
+      <div className="ml-2 h-[24px] flex flex-row items-center flex-1 space-y-2 overflow-hidden px-1">
         {spinner}
       </div>
     </div>

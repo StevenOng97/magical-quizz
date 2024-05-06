@@ -8,7 +8,7 @@ import { useActions, useUIState } from "ai/rsc";
 import { UserMessage } from "./stocks/message";
 import { type AI } from "@/lib/chat/actions";
 import { Button } from "@/components/ui/button";
-import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
+import { IconArrowElbow } from "@/components/ui/icons";
 import {
   Tooltip,
   TooltipContent,
@@ -72,14 +72,14 @@ export function PromptForm({
         } catch {
           toast(
             <div className="text-red-600">
-              You have reached your message limit! Please try again later, or{" "}
+              You have reached your message limit! Please try again later, or
             </div>
           );
         }
       }}
     >
-      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-zinc-100 px-12 sm:rounded-full sm:px-12">
-        <Button
+      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-zinc-100 pr-12">
+        {/* <Button
           variant="outline"
           size="icon"
           className="absolute left-4 top-[14px] size-8 rounded-full bg-background p-0 sm:left-4"
@@ -89,8 +89,7 @@ export function PromptForm({
         >
           <IconPlus />
           <span className="sr-only">New Chat</span>
-        </Button>
-
+        </Button> */}
         <Textarea
           ref={inputRef}
           tabIndex={0}
