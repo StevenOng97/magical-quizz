@@ -14,6 +14,7 @@ import { saveSubmission } from "@/actions/saveSubmissions";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import CircularProgressBar from "@/components/CircularProgressBar";
+import ComponentSpinner from "@/components/ComponentSpinner";
 
 const questionIndex = ["A.", "B.", "C.", "D."];
 
@@ -37,6 +38,7 @@ export default function QuizzQuestions(props: Props) {
   const [remainingTime, setRemainingTime] = useState(
     questions.length * 30 * 1000
   );
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
   // Convert remaining time to hh:mm:ss format
@@ -110,11 +112,12 @@ export default function QuizzQuestions(props: Props) {
 
   const handleSubmit = async () => {
     try {
-      const subId = await saveSubmission({ score }, props.quizz.id);
+      setIsSubmitting(true);
+      await saveSubmission({ score }, props.quizz.id);
     } catch (e) {
       console.log(e);
     }
-
+    setIsSubmitting(false);
     setSubmitted(true);
   };
 
@@ -138,9 +141,9 @@ export default function QuizzQuestions(props: Props) {
   }
 
   return (
-    <div className="flex flex-col bg-white/10 rounded-xl h-[90%] w-[90%] m-auto">
-      <div className="w-[90%] h-[90%] p-20 m-auto rounded-xl bg-red-200/20 flex flex-col justify-center">
-        <div className="flex justify-between">
+    <div className="flex flex-col bg-transparent/40 rounded-xl w-full m-auto">
+      <div className="w-[90%] h-[90%] p-20 m-auto rounded-xl flex flex-col gap-4 justify-center">
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-2">
           <div className="flex items-center gap-5">
             <Clock
               height={40}
@@ -151,16 +154,18 @@ export default function QuizzQuestions(props: Props) {
               <p className="text-2xl font-bold">{formattedTime}</p>
             </div>
           </div>
-          <Button
-            variant="secondary"
-            onClick={handleSubmit}
-            disabled={!quizzCompletedCheck}
-            className="font-bold text-xl"
-          >
-            Submit
-          </Button>
+          {started && (
+            <Button
+              variant="secondary"
+              onClick={handleSubmit}
+              disabled={isSubmitting || !quizzCompletedCheck}
+              className="font-bold text-xl"
+            >
+              {isSubmitting ? <ComponentSpinner /> : "Submit"}
+            </Button>
+          )}
         </div>
-        <main className="flex justify-center items-center flex-1 py-10">
+        <main className="flex justify-center items-center flex-1 py-5">
           {!started && (
             <div className="text-center">
               <h1 className="text-2xl font-bold mb-2">{name}</h1>
@@ -224,7 +229,7 @@ export default function QuizzQuestions(props: Props) {
             </div>
           )}
         </main>
-        <div className="footer pb-9 px-6 relative mb-0">
+        <div className="footer pb-4 relative">
           {!started && (
             <div className="w-full flex justify-center">
               <Button
