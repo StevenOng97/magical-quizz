@@ -159,7 +159,7 @@ export default function QuizzQuestions(props: Props) {
               variant="secondary"
               onClick={handleSubmit}
               disabled={isSubmitting || !quizzCompletedCheck}
-              className="font-bold text-xl"
+              className="font-bold text-xl w-[120px]"
             >
               {isSubmitting ? <ComponentSpinner /> : "Submit"}
             </Button>
