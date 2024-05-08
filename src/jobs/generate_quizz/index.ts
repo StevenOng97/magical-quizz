@@ -82,7 +82,7 @@ client.defineJob({
       return joinnedText;
     });
 
-    await io.runTask("save-to-vector-store", async () => {
+    io.runTask("save-to-vector-store", async () => {
       const vectorStore = getSupabaseVectorStore();
       await vectorStore.addDocuments(documentsWithMetadata);
     });
