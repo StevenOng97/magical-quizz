@@ -109,13 +109,14 @@ const UploadDoc = () => {
               id="document"
               className="relative block w-full h-full z-50 opacity-0 "
               onChange={handleDocumentUpload}
+              accept=".pdf"
             />
           </label>
           <p className="text-primary-foreground my-2">
             Supported file types: pdf
           </p>
           {error ? <p className="text-red-600">{error}</p> : null}
-          {document && (
+          {/* {document && (
             <div className="border border-white rounded-lg w-full p-10">
               <div className="flex flex-col md:flex-row gap-10 mb-5">
                 <div className="text-left">
@@ -195,7 +196,7 @@ const UploadDoc = () => {
                 Generate Quizz 🪄
               </Button>
             </div>
-          )}
+          )} */}
         </form>
       )}
     </div>
