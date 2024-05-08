@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { FC } from "react";
 
 interface Props {
@@ -51,7 +52,9 @@ const CircularProgressBar: FC<Props> = ({
           x={textX}
           y={textY}
           textAnchor="middle"
-          className="text-2xl font-bold text-red-400 stroke-white fill-white"
+          className={cn("text-2xl font-bold stroke-white fill-white", {
+            "stroke-leaf-bold fill-leaf-bold": percentage === 100,
+          })}
         >
           {text}
         </text>
