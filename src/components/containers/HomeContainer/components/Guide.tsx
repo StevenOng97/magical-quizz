@@ -18,7 +18,7 @@ const StepComponent = ({
     <div className="text-left">
       <Separator />
       <p className="font-bold pt-2">Step {stepCount}</p>
-      <div className="relative h-[300px] border-2 border-white rounded-md my-4">
+      <div className="relative h-[300px] my-4">
         <Image
           src={img}
           alt="demo image"
