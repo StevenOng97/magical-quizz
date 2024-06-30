@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
   } else {
     try {
-      const res = await db
+      await db
         .insert(users)
         .values({
           firstName,
@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
           id,
         })
         .returning();
-      console.log("res:", res);
     } catch (err) {
       return new Response(`Error creating user: ${err}`, {
         status: 400,

@@ -18,7 +18,7 @@ const page = async () => {
   return (
     <div className="flex flex-col flex-1">
       <main className="py-11 flex flex-col text-center gap-4 items-center flex-1 mt-24">
-        {!subscribed ? <UploadDoc /> : <UpgradePlan />}
+        <UploadDoc />
       </main>
     </div>
   );

@@ -5,7 +5,7 @@ import { users } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
-  const { price, quantity = 1 } = await req.json();
+  const { price, quantity = 1, id } = await req.json();
   const user = await currentUser();
 
   if (!user) {
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      success_url: `${baseUrl}/billing/payment/success`,
+      success_url: `${baseUrl}/request-management/${id}?bookingSuccess=true`,
       customer: customer.id,
       payment_method_types: ["card"],
       line_items: [

@@ -116,87 +116,16 @@ const UploadDoc = () => {
             Supported file types: pdf
           </p>
           {error ? <p className="text-red-600">{error}</p> : null}
-          {/* {document && (
-            <div className="border border-white rounded-lg w-full p-10">
-              <div className="flex flex-col md:flex-row gap-10 mb-5">
-                <div className="text-left">
-                  <Label>Number of Quizz</Label>
-                  <Input
-                    value={numberOfQuiz}
-                    type="number"
-                    className="text-black"
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-                      setNumberOfQuiz(newValue > 0 ? newValue : 1);
-                    }}
-                  />
-                </div>
-
-                <div className="text-left">
-                  <Label>Number of Answers per Quizz</Label>
-                  <Input
-                    value={answerPerQuizz}
-                    type="number"
-                    className="text-black"
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-                      setAnswerPerQuizz(newValue > 0 ? newValue : 1);
-                    }}
-                  />
-                </div>
-
-                <div className="text-left grow">
-                  <Label>Custom Prompt</Label>
-                  <Input
-                    className="text-black"
-                    value={customPrompt}
-                    onChange={(e) => setCustomPrompt(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="text-left">
-                <Label>Export Type</Label>
-                <RadioGroup
-                  defaultValue="quizzUrl"
-                  className="flex gap-10"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="quizzUrl"
-                      id="quizzUrl"
-                      className="text-white border-white"
-                    />
-                    <Label htmlFor="quizzUrl">Quizz URL</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="googleForm"
-                      id="googleForm"
-                      className="text-white border-white"
-                    />
-                    <Label htmlFor="googleForm">Google Form</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="pdfFile"
-                      id="pdfFile"
-                      className="text-white border-white"
-                    />
-                    <Label htmlFor="pdfFile">PDF File</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <Button
-                size="lg"
-                className="mt-5"
-                type="submit"
-                variant="secondary"
-              >
-                Generate Quizz 🪄
-              </Button>
-            </div>
-          )} */}
+          {document && (
+            <Button
+              size="lg"
+              className="mt-5"
+              type="submit"
+              variant="secondary"
+            >
+              Generate Quizz 🪄
+            </Button>
+          )}
         </form>
       )}
     </div>
